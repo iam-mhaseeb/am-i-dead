@@ -23,22 +23,24 @@ public class RunnerEngineManger : MonoBehaviour {
 
 
 	private void InstantiateGrounds(){
+		int oldJ=0;
 		Instantiate(groundObjects[0],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Always Instantiate First as it is
 		UpdatePositions();
-		for(int i=0;i<4;i++){
+		for(int i=0;i<10;i++){
 			int j = Random.Range(0,3);
-			if(j==2){
+			if(oldJ==j){
 				i--;
 			}else{
 				Instantiate(groundObjects[j],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Randomize 0,1,3 Grounds
 				UpdatePositions();
+				oldJ = j;
 			}
 		}
-		Instantiate(groundObjects[2],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 2 as it is
+		Instantiate(groundObjects[4],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 2 as it is
 		UpdatePositions();
-		Instantiate(groundObjects[3],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 3 as it is
+		Instantiate(groundObjects[5],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 3 as it is
 		UpdatePositions();
-		Instantiate(groundObjects[4],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 4 as it is
+		Instantiate(groundObjects[6],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 4 as it is
 		UpdatePositions();
 	}
 
