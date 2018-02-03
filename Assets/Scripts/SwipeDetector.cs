@@ -3,69 +3,55 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SwipeDetector : MonoBehaviour {
-
-	private Vector3 fp;   //First touch position
-    private Vector3 lp;   //Last touch position
-    private float dragDistance;  //minimum distance for a swipe to be registered
- 
+    private Vector2 initTouchPos;
+	int fingerCount = 0;
     void Start()
     {
-        dragDistance = Screen.height * 15 / 100; //dragDistance is 15% height of the screen
 
     }
  
     void Update()
     {
-        if (Input.touchCount == 1) // user is touching the screen with a single touch
-        {
-            Touch touch = Input.GetTouch(0); // get the touch
-            if (touch.phase == TouchPhase.Began) //check for the first touch
-            {
-                fp = touch.position;
-                lp = touch.position;
-            }
-            else if (touch.phase == TouchPhase.Moved) // update the last position based on where they moved
-            {
-                lp = touch.position;
-            }
-            else if (touch.phase == TouchPhase.Ended) //check if the finger is removed from the screen
-            {
-                lp = touch.position;  //last touch position. Ommitted if you use list
- 
-                //Check if drag distance is greater than 20% of the screen height
-                if (Mathf.Abs(lp.x - fp.x) > dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)
-                {//It's a drag
-                 //check if the drag is vertical or horizontal
-                    if (Mathf.Abs(lp.x - fp.x) > Mathf.Abs(lp.y - fp.y))
-                    {   //If the horizontal movement is greater than the vertical movement...
-                        if ((lp.x > fp.x))  //If the movement was to the right)
-                        {   //Right swipe
-                        }
-                        else
-                        {   //Left swipe
+        InputMovement();
+    }
+	void InputMovement(){
+		foreach (Touch touch in Input.touches) {
+			if (touch.phase == TouchPhase.Began) {
+				initTouchPos = touch.position;
+				fingerCount =1;
+			}
+			if (fingerCount == 1 && touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Ended) {
+				Vector2 touchFacing = (initTouchPos - touch.position).normalized;
+				if (Vector2.Dot (touchFacing, Vector2.up) > 0.8f && Vector2.Distance (initTouchPos, touch.position) > 10) {
+					if(fingerCount == 1){
+                        //Up swipe
+                        if(!RunnerPlayerMovement.Instance.isDie){
+                            RunnerPlayerMovement.Instance.MakeSlide();
                         }
                     }
-                    else
-                    {   //the vertical movement is greater than the horizontal movement
-                        if (lp.y > fp.y)  //If the movement was up
-                        {   //Up swipe
-                            if(!RunnerPlayerMovement.Instance.isDie){
-								RunnerPlayerMovement.Instance.JumpInput();
-							}
-                        }
-                        else
-                        {   //Down swipe
-							if(!RunnerPlayerMovement.Instance.isDie){
-                            	RunnerPlayerMovement.Instance.MakeSlide();
-							}
+					fingerCount = 0;
+				}
+				if (Vector2.Dot (touchFacing, -Vector2.up) > 0.8f && Vector2.Distance (initTouchPos, touch.position) > 10) {
+					if(fingerCount == 1){
+                        //Up swipe
+                        if(!RunnerPlayerMovement.Instance.isDie){
+                            RunnerPlayerMovement.Instance.JumpInput();
                         }
                     }
-                }
-                else
-                {   //It's a tap as the drag distance is less than 20% of the screen height
-                    Debug.Log("Tap");
-                }
-            }
-        }
+					fingerCount = 0;
+				}
+				if (Vector2.Dot (touchFacing, Vector2.right) > 0.8f && Vector2.Distance (initTouchPos, touch.position) > 10) {
+					if(fingerCount == 1) //Left
+					fingerCount = 0;
+				}
+				if (Vector2.Dot (touchFacing, -Vector2.right) > 0.8f && Vector2.Distance (initTouchPos, touch.position) > 10) {
+
+					if(fingerCount == 1) //Right
+					fingerCount = 0;
+				}
+			}
+		}
     }
 }
+
+
