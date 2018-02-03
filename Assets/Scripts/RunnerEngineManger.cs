@@ -18,7 +18,6 @@ public class RunnerEngineManger : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
 
 
@@ -27,7 +26,7 @@ public class RunnerEngineManger : MonoBehaviour {
 		Instantiate(groundObjects[0],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Always Instantiate First as it is
 		UpdatePositions();
 		for(int i=0;i<10;i++){
-			int j = Random.Range(0,3);
+			int j = Random.Range(1,4);
 			if(oldJ==j){
 				i--;
 			}else{
@@ -36,11 +35,11 @@ public class RunnerEngineManger : MonoBehaviour {
 				oldJ = j;
 			}
 		}
-		Instantiate(groundObjects[4],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 2 as it is
+		Instantiate(groundObjects[5],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 2 as it is
 		UpdatePositions();
-		Instantiate(groundObjects[5],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 3 as it is
+		Instantiate(groundObjects[6],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 3 as it is
 		UpdatePositions();
-		Instantiate(groundObjects[6],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 4 as it is
+		Instantiate(groundObjects[7],initialGroundPoitionObject.transform.position,initialGroundPoitionObject.transform.rotation);//Instantiate 4 as it is
 		UpdatePositions();
 	}
 
@@ -48,14 +47,4 @@ public class RunnerEngineManger : MonoBehaviour {
 		initialGroundPoitionObject.transform.position = new Vector3(initialGroundPoitionObject.transform.position.x+22,initialGroundPoitionObject.transform.position.y,initialGroundPoitionObject.transform.position.z);
 	}
 
-	IEnumerator UpdatePositionofCamera(){
-    float t = 0.0f;
-    Vector3 startingPos = transform.position;
-    while (t < 1.0f)
-	{
-		t += Time.deltaTime * (Time.timeScale/transitionDuration);
-		Camera.main.transform.position = Vector3.Lerp(new Vector3(Camera.main.transform.position.x,Camera.main.transform.position.y,Camera.main.transform.position.z),new Vector3(Camera.main.transform.position.x+22,Camera.main.transform.position.y,Camera.main.transform.position.z),t);
-		yield return 0;
-	}
-	}
 }

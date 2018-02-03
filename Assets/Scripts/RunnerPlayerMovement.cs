@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class RunnerPlayerMovement : MonoBehaviour {
+
+	private static RunnerPlayerMovement _instance;
+
+    public static RunnerPlayerMovement Instance 
+    { 
+        get { return _instance; } 
+    } 
 	float jumpInputTime;
 	bool onGround;
 	public float jumpForce;
@@ -17,6 +24,18 @@ public class RunnerPlayerMovement : MonoBehaviour {
 	public CapsuleCollider cc;
 
 //	float initYPos;
+
+	void Awake() 
+    { 
+        if (_instance != null && _instance != this) 
+        { 
+            Destroy(this.gameObject);
+            return;
+        }
+
+        _instance = this;
+        DontDestroyOnLoad(this.gameObject);
+    } 
 	void Start () {
 		StartRun ();
 //		initYPos = transform.position.y;
@@ -24,11 +43,15 @@ public class RunnerPlayerMovement : MonoBehaviour {
 
 	void Update () {
 		//jumping
-		if (Input.GetKeyDown (KeyCode.UpArrow)) {
-			JumpInput ();
+		if (Input.GetKeyDown (KeyCode.UpArrow)||Input.GetKeyDown (KeyCode.W)) {
+			if(!isDie){
+				JumpInput ();
+			}
 		}
-		if (Input.GetKeyDown (KeyCode.DownArrow)) {
-			MakeSlide ();
+		if (Input.GetKeyDown (KeyCode.DownArrow)||Input.GetKeyDown (KeyCode.S)) {
+			if(!isDie){
+				MakeSlide ();
+			}
 		}
 		if (jumpInputTime > 0) {
 			jumpInputTime -= Time.deltaTime;
@@ -64,7 +87,7 @@ public class RunnerPlayerMovement : MonoBehaviour {
 	}
 
 	public void JumpInput(){
-		jumpInputTime = 0.3f;
+		jumpInputTime = 0.35f;
 	}
 	void MakeJump(){
 		jumpInputTime = 0;
@@ -90,12 +113,14 @@ public class RunnerPlayerMovement : MonoBehaviour {
 	void Die(){
 		isDie = true;
 		canRun = false;
-		rb.velocity = Vector3.zero;
+		transform.position -= new Vector3 (moveSpeed * Time.deltaTime, 0, 0);
 //		transform.position = new Vector3 (transform.position.x, initYPos, transform.position.z);
 		anim.Rebind ();
 		anim.Play ("Die");
+		rb.velocity = Vector3.zero;
+		
 	}
-	void OnCollisionEnter(Collision c){
+	void OnCollisionStay(Collision c){
 		if (c.gameObject.tag == "Ground") {
 			onGround = true;
 		}
@@ -112,7 +137,8 @@ public class RunnerPlayerMovement : MonoBehaviour {
 	void OnTriggerEnter(Collider c){
 		if (c.gameObject.tag == "CP") {
 			//call patch generater method to generate new ptach
-		}
+			
+		}	
 	}
 
 }
