@@ -6,12 +6,13 @@ using UnityEngine.EventSystems;
 public class L_PlayerMovementController : MonoBehaviour {
 
     [SerializeField]
-    private float speed;
+    private GameObject MainCanvas;
 
     [SerializeField]
-    private Avatar RunningAvatr;
+    private GameObject DialoguesCanvas;
 
-    private Avatar IdleAvatar;
+    [SerializeField]
+    private float speed;
 
     private Animator animatorObj;
 
@@ -20,12 +21,17 @@ public class L_PlayerMovementController : MonoBehaviour {
 
     private bool isMoving;
 
-	// Use this for initialization
-	void Start ()
+    private bool lockInputs = false;
+
+    private float turningAnimLength;
+
+    // Use this for initialization
+    void Start ()
     {
-        animatorObj = this.GetComponent<Animator>();
+        animatorObj = this.transform.GetChild(0).gameObject.GetComponent<Animator>();
         cameraOffset = Camera.main.transform.position;
         cameraOffset = transform.position - Camera.main.transform.position;
+        newPos = transform.position;
     }
 	
 	// Update is called once per frame
@@ -33,29 +39,83 @@ public class L_PlayerMovementController : MonoBehaviour {
     {
         if (isMoving)
         {
-            newPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-            //speed *= Time.deltaTime;
-            newPos.z += (speed * Time.deltaTime);
-            transform.position = newPos;
-            Vector3 camNewPos = Camera.main.transform.position;
-            camNewPos.z = transform.position.z - cameraOffset.z;
-            Camera.main.transform.position = camNewPos;
+            if (animatorObj.rootRotation.y <= 0)
+            {
+                newPos = transform.position;
+                newPos.z += (speed * Time.deltaTime);
+                transform.position = newPos;
+                Vector3 camNewPos = Camera.main.transform.position;
+                camNewPos.z = transform.position.z - cameraOffset.z;
+                Camera.main.transform.position = camNewPos;
+            }
+            else
+            {
+                newPos = transform.position;
+                newPos.x += (speed * Time.deltaTime);
+                transform.position = newPos;
+                Vector3 camNewPos = Camera.main.transform.position;
+                camNewPos.x = transform.position.x - cameraOffset.x;
+                Camera.main.transform.position = camNewPos;
+            }
+        }
+
+        //if(transform.position.y == 90 && lockInputs)
+        //{
+        //    lockInputs = false;
+        //}
+
+        if(turningAnimLength > 0)
+        {
+            turningAnimLength -= Time.deltaTime;
+        }
+        else
+        {
+            if(lockInputs)
+            {
+                lockInputs = false;
+                //transform.position = animatorObj.rootPosition;
+                //transform.rotation = animatorObj.rootRotation;
+            }
         }
 	}
 
     public void MoveButtonDown()
     {
-        IdleAvatar = GetComponent<Animator>().avatar;
-        GetComponent<Animator>().avatar = RunningAvatr;
-        animatorObj.SetTrigger("Run");
-        isMoving = true;
+        if (!lockInputs)
+        {
+            animatorObj.applyRootMotion = false;
+            animatorObj.Play("run");
+            isMoving = true;
+        }
     }
 
     public void MoveButtonUp()
     {
-        GetComponent<Animator>().avatar = IdleAvatar;
-        transform.position = newPos;
-        animatorObj.SetTrigger("Stop");
-        isMoving = false;
+        if (!lockInputs)
+        {
+            animatorObj.Play("Idle");
+            isMoving = false;
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name == "Turn Right")
+        {
+            isMoving = false;
+            lockInputs = true;
+            animatorObj.Play("turn_right");
+            animatorObj.applyRootMotion = true;
+            turningAnimLength = 1;
+        }
+        else if(other.gameObject.name == "Stop")
+        {
+            isMoving = false;
+            lockInputs = true;
+            animatorObj.Play("Idle");
+
+            MainCanvas.SetActive(false);
+            DialoguesCanvas.SetActive(true);
+        }
     }
 }

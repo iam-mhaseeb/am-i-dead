@@ -26,7 +26,8 @@ public class L_DialogueManager : MonoBehaviour {
     private int dialogueIndex;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         StartDialogues();
 	}
 	
@@ -89,9 +90,13 @@ public class L_DialogueManager : MonoBehaviour {
                 dialogueIndex++;
                 dialogueField.text = this.dialogues[dialogueIndex];
 
-                if (dialogueIndex == 4)
+                if (dialogueIndex == 4 && GameManager.levelNumber == 1)
                 {
                     playerControllerObject.LevelOneControls();
+                }
+                else if(dialogueIndex == 4 && GameManager.levelNumber == 3)
+                {
+                    
                 }
                 else
                 {

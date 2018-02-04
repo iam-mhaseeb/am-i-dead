@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
-	public static int levelNumber = 0;
-
+    public static int levelNumber = 1;
 
 	[Header("List of Prefabs for Activity")]
 	public GameObject [] activityPrfabs;
