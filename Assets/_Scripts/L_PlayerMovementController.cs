@@ -59,11 +59,6 @@ public class L_PlayerMovementController : MonoBehaviour {
             }
         }
 
-        //if(transform.position.y == 90 && lockInputs)
-        //{
-        //    lockInputs = false;
-        //}
-
         if(turningAnimLength > 0)
         {
             turningAnimLength -= Time.deltaTime;
@@ -73,8 +68,6 @@ public class L_PlayerMovementController : MonoBehaviour {
             if(lockInputs)
             {
                 lockInputs = false;
-                //transform.position = animatorObj.rootPosition;
-                //transform.rotation = animatorObj.rootRotation;
             }
         }
 	}

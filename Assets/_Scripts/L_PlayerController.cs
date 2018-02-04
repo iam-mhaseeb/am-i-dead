@@ -16,7 +16,7 @@ public class L_PlayerController : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        LevelOneControls();
+        
     }
 	
 	// Update is called once per frame
@@ -42,8 +42,9 @@ public class L_PlayerController : MonoBehaviour {
         
         if (this.transform.rotation.eulerAngles.x <= 180)
         {
-            this.transform.rotation = Quaternion.Euler(-180, -90, 90);
+            this.transform.rotation = Quaternion.Euler(0, 90, 0);
             isRotating = false;
+            StopCoroutine("WaitToRecogniseOtherPerson");
             StartCoroutine("WaitToRecogniseOtherPerson");
         }
     }

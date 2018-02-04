@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class L_DialogueManager : MonoBehaviour {
 
@@ -94,9 +95,13 @@ public class L_DialogueManager : MonoBehaviour {
                 {
                     playerControllerObject.LevelOneControls();
                 }
-                else if(dialogueIndex == 4 && GameManager.levelNumber == 3)
+                else if(dialogueIndex == 4 && GameManager.levelNumber == 2)
                 {
                     
+                }
+                else if (dialogueIndex == 4 && GameManager.levelNumber == 3)
+                {
+
                 }
                 else
                 {
@@ -104,6 +109,21 @@ public class L_DialogueManager : MonoBehaviour {
                     InvokeRepeating("DialoguesFadeIn", 0, 0.1f);
                 }
             }
+        }
+    }
+
+    public void TwinDeadButton()
+    {
+        string choice = EventSystem.current.currentSelectedGameObject.name;
+        Debug.Log(choice);
+
+        if (choice.Contains("Twin"))
+        {
+            GameManager.GoToNextLevel(1);
+        }
+        else
+        {
+            GameManager.GoToNextLevel(2);
         }
     }
 }
