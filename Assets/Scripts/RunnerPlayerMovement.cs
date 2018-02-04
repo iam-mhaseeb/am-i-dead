@@ -23,6 +23,7 @@ public class RunnerPlayerMovement : MonoBehaviour {
 	public Animator anim;
 	public CapsuleCollider cc;
 
+	bool isClimb,isClimbEnd;
 //	float initYPos;
 
 	void Awake() 
@@ -60,22 +61,23 @@ public class RunnerPlayerMovement : MonoBehaviour {
 			
 			MakeJump ();
 		}
-
 		//end jumping
 		if(!onGround){
 			rb.AddForce (-Vector2.up * (jumpForce * 2));
 		}
-
 		if (sliding > 0) {
 			cc.height = 1;
+			cc.center = new Vector3(0,0.5f,0);
 			sliding -= Time.deltaTime;
-		} else {
+		} else if(!isDie){
 			cc.height = 2;
+			cc.center =  new Vector3(0,1,0);
 		}
-
 		Move ();
+		if(isClimb){
+			Climb();
+		}
 	}
-
 	public void StartRun (){
 		canRun = true;
 		anim.Play ("Run");
@@ -85,7 +87,6 @@ public class RunnerPlayerMovement : MonoBehaviour {
 			transform.position += new Vector3 (moveSpeed * Time.deltaTime, 0, 0);
 		}
 	}
-
 	public void JumpInput(){
 		jumpInputTime = 0.35f;
 	}
@@ -95,7 +96,6 @@ public class RunnerPlayerMovement : MonoBehaviour {
 		anim.Play ("Jump");
 		rb.AddForce (Vector3.up * jumpForce, ForceMode.Impulse);
 	}
-
 	public void MakeSlide(){
 		if (sliding < 0.2f) {
 			anim.Rebind ();
@@ -128,7 +128,6 @@ public class RunnerPlayerMovement : MonoBehaviour {
 			Die ();
 		}
 	}
-
 	void OnCollisionExit(Collision c){
 		if (c.gameObject.tag == "Ground") {
 			onGround = false;
@@ -136,9 +135,40 @@ public class RunnerPlayerMovement : MonoBehaviour {
 	}
 	void OnTriggerEnter(Collider c){
 		if (c.gameObject.tag == "CP") {
-			//call patch generater method to generate new ptach
-			
+			if(c.gameObject.name=="stairs"){
+				anim.Play("Climb");
+				canRun = false;
+				isClimb = true;
+				RunnerEngineManger.Instance.fadeIn = true;
+				StartCoroutine(ResetGameState());
+			}
+			if(c.gameObject.name=="StopCamera"){
+				RunnerEngineManger.Instance.isMoveCamera = false;
+			}
 		}	
 	}
-
+	void Climb(){
+		transform.position += Vector3.up * 5 * Time.deltaTime;
+		rb.isKinematic = true;
+	}
+	void EndClimbing(){
+		isClimbEnd = true;
+		isClimb = false;
+		rb.isKinematic = false;
+	}
+	IEnumerator  ResetGameState(){
+		yield return new WaitForSeconds(5f);
+		RunnerEngineManger.Instance.fadeIn = false;
+		RunnerEngineManger.Instance.sprite.color = new Color(0f,0f,0f);
+		RunnerEngineManger.Instance.hider.transform.position = new Vector3(Camera.main.transform.position.x+22f,RunnerEngineManger.Instance.hider.transform.position.y,RunnerEngineManger.Instance.hider.transform.position.z);
+		Camera.main.transform.position = new Vector3(Camera.main.transform.position.x+22f,Camera.main.transform.position.y,Camera.main.transform.position.z);
+		transform.position = new Vector3(transform.position.x+22f,transform.position.y,transform.position.z);
+		anim.Play("Idle");
+		EndClimbing();
+		RunnerEngineManger.Instance.fadeOut = true;
+		yield return new WaitForSeconds(5f);
+		RunnerEngineManger.Instance.fadeOut = false;
+		canRun = true;
+		anim.Play("Run");
+	}
 }
